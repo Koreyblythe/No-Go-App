@@ -1,0 +1,38 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f4f4;
+}
+
+header {
+  background: #222;
+  color: #fff;
+  text-align: center;
+  padding: 1em;
+}
+
+#identity-selector {
+  background: #fff;
+  padding: 1em;
+  margin: 1em;
+}
+
+#map {
+  height: 400px;
+  margin: 1em;
+  border: 2px solid #ccc;
+}
+
+#report {
+  background: #fff;
+  padding: 1em;
+  margin: 1em;
+}
+
+form input, form textarea, form button {
+  display: block;
+  width: 100%;
+  margin-bottom: 1em;
+  padding: 0.5em;
+}
