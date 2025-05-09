@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>No Go App (Beta)</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>No Go App</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
 <body>
-  <header>
+  <!-- Intro Page -->
+  <div id="intro-page">
     <h1>No Go</h1>
-    <p>Stay aware. Stay safe. Identity-based awareness for everyone.</p>
-  </header>
-
-  <section id="identity-selector">
-    <h2>Select your identity</h2>
-    <label><input type="checkbox" value="racial"> Racial Minority</label>
-    <label><input type="checkbox" value="lgbtq"> LGBTQ+</label>
-    <label><input type="checkbox" value="interracial"> Interracial Couple</label>
-    <label><input type="checkbox" value="political"> Political Minority</label>
-    <label><input type="checkbox" value="woman"> Woman</label>
-  </section>
-
-  <section id="map"></section>
-
-  <section id="report">
-    <h2>Report an Experience</h2>
-    <form id="report-form">
-      <input type="text" placeholder="Location (City, State)" required>
-      <textarea placeholder="Describe your experience" required></textarea>
-      <button type="submit">Submit Report</button>
+    <p>Stay aware based on who you are. Help us customize your experience.</p>
+    <form id="identity-form">
+      <label>Race/Ethnicity:
+        <input type="text" name="race" required />
+      </label>
+      <label>Gender Identity:
+        <input type="text" name="gender" required />
+      </label>
+      <label>Sexual Orientation:
+        <input type="text" name="orientation" required />
+      </label>
+      <label>Political Affiliation (optional):
+        <input type="text" name="politics" />
+      </label>
+      <button type="submit">Continue</button>
     </form>
-  </section>
+  </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+  <!-- Main App UI -->
+  <div id="main-app" style="display:none;">
+    <header>
+      <h2>No Go Map</h2>
+    </header>
+
+    <button id="sidebar-toggle">☰</button>
+
+    <div id="sidebar">
+      <h3>User Info</h3>
+      <p><strong>Race:</strong
