@@ -48,12 +48,28 @@
       <p><strong>Orientation:</strong> <span id="user-orientation"></span></p>
       <p><strong>Politics:</strong> <span id="user-politics"></span></p>
       <button id="reset-btn">Change Identity</button>
+
+      <hr />
+
+      <h4>Submit a Report</h4>
+      <form id="user-report-form">
+        <label>
+          City, State:
+          <input type="text" name="location" required />
+        </label>
+        <label>
+          Description:
+          <textarea name="description" rows="3" required></textarea>
+        </label>
+        <button type="submit">Submit Report</button>
+      </form>
+
+      <p id="submit-status" style="font-size: 0.9em; color: #03dac5; margin-top: 5px;"></p>
     </div>
 
     <div id="map"></div>
   </div>
 
-  <!-- Map + Heatmap Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
   <script src="script.js" defer></script>
