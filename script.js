@@ -80,7 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Map + heat layer
   function initMap(identity) {
-    const map = L.map('map').setView([38.6270, -90.1994], 5);
+    const map = L.map('map', {
+      maxBounds: [
+        [49.5, -125],  // top-left corner of U.S.
+        [24.5, -66.5]  // bottom-right corner
+      ],
+      maxBoundsViscosity: 1.0
+    }).setView([39.5, -98.35], 5); // center on U.S.
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
     const reports = [
@@ -119,9 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     L.heatLayer(heatPoints, {
-      radius: 25,
-      blur: 15,
-      maxZoom: 10
+      radius: 35,
+      blur: 10,
+      minOpacity: 0.4,
+      maxZoom: 15
     }).addTo(map);
   }
 
