@@ -1,7 +1,8 @@
 body {
   margin: 0;
-  font-family: 'Arial', sans-serif;
-  background: #f2f2f2;
+  font-family: 'Segoe UI', sans-serif;
+  background: #121212;
+  color: #eee;
 }
 
 h1, h2 {
@@ -15,27 +16,41 @@ h1, h2 {
 
 form label {
   display: block;
-  margin: 1em 0;
+  margin: 1.2em 0;
 }
 
-form input {
+form input[type="text"] {
   width: 100%;
   padding: 0.5em;
   margin-top: 0.25em;
+  background: #1e1e1e;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+
+form small {
+  display: block;
+  font-size: 0.85em;
+  margin-top: 5px;
+  color: #aaa;
 }
 
 button {
   padding: 0.6em 1.2em;
-  background: #222;
-  color: white;
+  background: #03dac5;
+  color: #000;
+  font-weight: bold;
   border: none;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 #map {
   height: 500px;
   margin-top: 20px;
-  border: 2px solid #ccc;
+  border: 2px solid #333;
+  border-radius: 8px;
 }
 
 #sidebar {
@@ -43,8 +58,8 @@ button {
   top: 80px;
   left: -250px;
   width: 240px;
-  background: white;
-  border-right: 1px solid #ccc;
+  background: #1f1f1f;
+  border-right: 1px solid #444;
   padding: 10px;
   transition: left 0.3s ease;
   z-index: 1000;
@@ -59,8 +74,9 @@ button {
   top: 20px;
   left: 20px;
   font-size: 1.5em;
-  background: #444;
-  color: white;
+  background: #03dac5;
+  color: #000;
   border: none;
   z-index: 1100;
+  border-radius: 4px;
 }
