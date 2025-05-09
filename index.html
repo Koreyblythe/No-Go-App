@@ -11,19 +11,23 @@
   <!-- Intro Page -->
   <div id="intro-page">
     <h1>No Go</h1>
-    <p>Stay aware based on who you are. Help us customize your experience.</p>
+    <p>Help us customize your experience. You can skip any question.</p>
     <form id="identity-form">
       <label>Race/Ethnicity:
-        <input type="text" name="race" required />
+        <input type="text" name="race" placeholder="e.g. Black, Asian, Latino" />
+        <small><input type="checkbox" name="race-skip" /> Prefer not to say</small>
       </label>
       <label>Gender Identity:
-        <input type="text" name="gender" required />
+        <input type="text" name="gender" placeholder="e.g. Woman, Nonbinary" />
+        <small><input type="checkbox" name="gender-skip" /> Prefer not to say</small>
       </label>
       <label>Sexual Orientation:
-        <input type="text" name="orientation" required />
+        <input type="text" name="orientation" placeholder="e.g. Gay, Bi, Straight" />
+        <small><input type="checkbox" name="orientation-skip" /> Prefer not to say</small>
       </label>
       <label>Political Affiliation (optional):
-        <input type="text" name="politics" />
+        <input type="text" name="politics" placeholder="e.g. Left, Right, Moderate" />
+        <small><input type="checkbox" name="politics-skip" /> Prefer not to say</small>
       </label>
       <button type="submit">Continue</button>
     </form>
@@ -39,4 +43,17 @@
 
     <div id="sidebar">
       <h3>User Info</h3>
-      <p><strong>Race:</strong
+      <p><strong>Race:</strong> <span id="user-race"></span></p>
+      <p><strong>Gender:</strong> <span id="user-gender"></span></p>
+      <p><strong>Orientation:</strong> <span id="user-orientation"></span></p>
+      <p><strong>Politics:</strong> <span id="user-politics"></span></p>
+      <button id="reset-btn">Change Identity</button>
+    </div>
+
+    <div id="map"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
