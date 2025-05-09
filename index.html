@@ -14,26 +14,26 @@
     <p>Help us customize your experience. You can skip any question.</p>
     <form id="identity-form">
       <label>Race/Ethnicity:
-        <input type="text" name="race" />
+        <input type="text" name="race" placeholder="e.g. Black, Asian, Latino" />
         <small><input type="checkbox" name="race-skip" /> Prefer not to say</small>
       </label>
       <label>Gender Identity:
-        <input type="text" name="gender" />
+        <input type="text" name="gender" placeholder="e.g. Woman, Nonbinary" />
         <small><input type="checkbox" name="gender-skip" /> Prefer not to say</small>
       </label>
       <label>Sexual Orientation:
-        <input type="text" name="orientation" />
+        <input type="text" name="orientation" placeholder="e.g. Gay, Bi, Straight" />
         <small><input type="checkbox" name="orientation-skip" /> Prefer not to say</small>
       </label>
       <label>Political Affiliation (optional):
-        <input type="text" name="politics" />
+        <input type="text" name="politics" placeholder="e.g. Left, Right, Moderate" />
         <small><input type="checkbox" name="politics-skip" /> Prefer not to say</small>
       </label>
       <button type="submit">Continue</button>
     </form>
   </div>
 
-  <!-- Main App UI -->
+  <!-- Main App -->
   <div id="main-app" style="display:none;">
     <header>
       <h2>No Go Map</h2>
@@ -53,8 +53,9 @@
     <div id="map"></div>
   </div>
 
-  <!-- Scripts at the very end for proper load -->
+  <!-- Map + Heatmap Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
   <script src="script.js" defer></script>
 </body>
 </html>
