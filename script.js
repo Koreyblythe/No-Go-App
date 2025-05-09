@@ -3,13 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const introPage = document.getElementById('intro-page');
   const mainApp = document.getElementById('main-app');
 
-  // Get field or "Prefer not to say"
+  // Handle opt-out or text value
   function getValue(name) {
     const skip = document.querySelector(`input[name="${name}-skip"]`).checked;
     return skip ? 'N/A' : document.querySelector(`input[name="${name}"]`).value || 'N/A';
   }
 
-  // Show main app + identity in sidebar + map
+  // Show main app
   function showMainApp() {
     introPage.style.display = 'none';
     mainApp.style.display = 'block';
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initMap(identity);
   }
 
-  // Handle form submission
+  // Save identity
   if (identityForm) {
     identityForm.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Toggle sidebar
+  // Sidebar toggle
   const sidebarToggle = document.getElementById('sidebar-toggle');
   if (sidebarToggle) {
     sidebarToggle.addEventListener('click', () => {
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Reset identity
+  // Reset user identity
   const resetBtn = document.getElementById('reset-btn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
@@ -58,7 +58,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Initialize Leaflet map + markers + heat
+  // Report form
+  const reportForm = document.getElementById('user-report-form');
+  const submitStatus = document.getElementById('submit-status');
+
+  if (reportForm) {
+    reportForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(reportForm);
+      const location = formData.get('location');
+      const description = formData.get('description');
+
+      console.log("User submitted report:", { location, description });
+
+      submitStatus.textContent = "Report submitted. Thank you.";
+      reportForm.reset();
+
+      // Future: Airtable API POST will go here
+    });
+  }
+
+  // Map + heat layer
   function initMap(identity) {
     const map = L.map('map').setView([38.6270, -90.1994], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -90,13 +110,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Heat map demo (static for now)
     const heatPoints = [
-      [38.6270, -90.1994, 0.8],   // St. Louis
-      [34.0522, -118.2437, 0.6],  // LA
-      [40.7128, -74.0060, 0.7],   // NYC
-      [41.8781, -87.6298, 0.5],   // Chicago
-      [29.7604, -95.3698, 0.3]    // Houston
+      [38.6270, -90.1994, 0.8],
+      [34.0522, -118.2437, 0.6],
+      [40.7128, -74.0060, 0.7],
+      [41.8781, -87.6298, 0.5],
+      [29.7604, -95.3698, 0.3]
     ];
 
     L.heatLayer(heatPoints, {
@@ -106,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }).addTo(map);
   }
 
-  // Auto-load if user identity already exists
   if (localStorage.getItem('identity')) {
     showMainApp();
   }
