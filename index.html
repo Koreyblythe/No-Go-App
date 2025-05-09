@@ -1,1 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No Go App (Beta)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <header>
+    <h1>No Go</h1>
+    <p>Stay aware. Stay safe. Identity-based awareness for everyone.</p>
+  </header>
 
+  <section id="identity-selector">
+    <h2>Select your identity</h2>
+    <label><input type="checkbox" value="racial"> Racial Minority</label>
+    <label><input type="checkbox" value="lgbtq"> LGBTQ+</label>
+    <label><input type="checkbox" value="interracial"> Interracial Couple</label>
+    <label><input type="checkbox" value="political"> Political Minority</label>
+    <label><input type="checkbox" value="woman"> Woman</label>
+  </section>
+
+  <section id="map"></section>
+
+  <section id="report">
+    <h2>Report an Experience</h2>
+    <form id="report-form">
+      <input type="text" placeholder="Location (City, State)" required>
+      <textarea placeholder="Describe your experience" required></textarea>
+      <button type="submit">Submit Report</button>
+    </form>
+  </section>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
