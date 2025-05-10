@@ -81,9 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const defaultCenter = [39.5, -98.35];
     const defaultZoom = 5;
-    map.setView(userLocation || defaultCenter, userLocation ? 10 : defaultZoom);
+    map.setView(userLocation || defaultCenter, userLocation ? 7 : defaultZoom);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; OpenStreetMap contributors',
+    }).addTo(map);
 
     if (userLocation) {
       L.marker(userLocation).addTo(map).bindPopup("You are here").openPopup();
@@ -91,27 +93,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const heatPoints = [];
 
-    // Load CSV
     try {
       const response = await fetch("police-data.csv");
       const csvText = await response.text();
-      const rows = csvText.split("\n").slice(1); // skip header
+      const rows = csvText.split("\n").slice(1);
 
       rows.forEach((row) => {
         const cells = row.split(",");
-        const lat = parseFloat(cells[37]); // Latitude
-        const lon = parseFloat(cells[38]); // Longitude
+        const lat = parseFloat(cells[37]);
+        const lon = parseFloat(cells[38]);
+
         if (!isNaN(lat) && !isNaN(lon)) {
-          heatPoints.push([lat, lon, 0.5]);
+          heatPoints.push([lat, lon, 0.25]); // lighter intensity
         }
       });
 
       if (heatPoints.length > 0) {
         L.heatLayer(heatPoints, {
-          radius: 35,
-          blur: 10,
-          minOpacity: 0.4,
-          maxZoom: 15,
+          radius: 25,
+          blur: 20,
+          gradient: {
+            0.2: "#00ffff",
+            0.4: "#03dac5",
+            0.6: "#ff8c00",
+            1.0: "#ff0000"
+          },
+          minOpacity: 0.3,
+          maxZoom: 15
         }).addTo(map);
       } else {
         console.warn("No valid coordinates found in CSV.");
