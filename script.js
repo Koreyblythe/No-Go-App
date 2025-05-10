@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     mainApp.style.display = "block";
 
     const identity = JSON.parse(localStorage.getItem("identity"));
-
     document.getElementById("user-race").textContent = identity.race;
     document.getElementById("user-gender").textContent = identity.gender;
     document.getElementById("user-orientation").textContent = identity.orientation;
@@ -66,37 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const description = formData.get("description");
 
       console.log("User submitted report:", { location, description });
-
       submitStatus.textContent = "Report submitted. Thank you.";
       reportForm.reset();
     });
-  }
-
-  async function fetchAirtableRecords() {
-    const allRecords = [];
-    let offset = "";
-    const baseId = "appCgfEfLOlcf3RbH";
-    const tableName = "Police%20Violence%20Data";
-    const token = "patEEWO4nELIhjRsJ.e44b3ecaea0ae8e9fbbfb5b151db087cc5834b489001dd97a4a190a6e39c98a6";
-
-    try {
-      do {
-        const url = `https://api.airtable.com/v0/${baseId}/${tableName}?pageSize=100${offset ? `&offset=${offset}` : ""}`;
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await response.json();
-        allRecords.push(...data.records);
-        offset = data.offset;
-      } while (offset);
-    } catch (error) {
-      console.error("Error fetching from Airtable:", error);
-    }
-
-    return allRecords;
   }
 
   async function initMap() {
@@ -118,29 +89,35 @@ document.addEventListener("DOMContentLoaded", () => {
       L.marker(userLocation).addTo(map).bindPopup("You are here").openPopup();
     }
 
-    const records = await fetchAirtableRecords();
-
     const heatPoints = [];
 
-    records.forEach((record) => {
-      const fields = record.fields;
-      const lat = fields.Latitude;
-      const lon = fields.Longitude;
+    // Load CSV
+    try {
+      const response = await fetch("police-data.csv");
+      const csvText = await response.text();
+      const rows = csvText.split("\n").slice(1); // skip header
 
-      if (lat && lon) {
-        heatPoints.push([lat, lon, 0.5]);
+      rows.forEach((row) => {
+        const cells = row.split(",");
+        const lat = parseFloat(cells[37]); // Latitude
+        const lon = parseFloat(cells[38]); // Longitude
+        if (!isNaN(lat) && !isNaN(lon)) {
+          heatPoints.push([lat, lon, 0.5]);
+        }
+      });
+
+      if (heatPoints.length > 0) {
+        L.heatLayer(heatPoints, {
+          radius: 35,
+          blur: 10,
+          minOpacity: 0.4,
+          maxZoom: 15,
+        }).addTo(map);
+      } else {
+        console.warn("No valid coordinates found in CSV.");
       }
-    });
-
-    if (heatPoints.length > 0) {
-      L.heatLayer(heatPoints, {
-        radius: 35,
-        blur: 10,
-        minOpacity: 0.4,
-        maxZoom: 15,
-      }).addTo(map);
-    } else {
-      console.warn("No valid coordinates found in Airtable data.");
+    } catch (err) {
+      console.error("Failed to load CSV:", err);
     }
   }
 
@@ -152,8 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
           showMainApp();
         }
       },
-      (error) => {
-        console.warn("Geolocation error:", error.message);
+      () => {
         if (localStorage.getItem("identity")) {
           showMainApp();
         }
