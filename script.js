@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function initMap(identity) {
+  async function initMap(identity) {
     const map = L.map('map', {
       maxBounds: [
         [49.5, -125],
@@ -92,50 +92,45 @@ document.addEventListener("DOMContentLoaded", () => {
       L.marker(userLocation).addTo(map).bindPopup("You are here").openPopup();
     }
 
-    const reports = [
-      {
-        coords: [38.6270, -90.1994],
-        identity: ['racial', 'woman'],
-        description: "Uncomfortable vibes downtown."
-      },
-      {
-        coords: [34.0522, -118.2437],
-        identity: ['lgbtq'],
-        description: "Verbal harassment at night."
-      },
-      {
-        coords: [40.7128, -74.0060],
-        identity: ['political'],
-        description: "Judged for political clothing."
-      }
-    ];
-
     const identityValues = Object.values(identity).map(v => v.toLowerCase());
 
-    reports.forEach(report => {
-      const match = report.identity.some(id => identityValues.includes(id));
-      if (match) {
-        L.marker(report.coords).addTo(map).bindPopup(report.description);
-      }
-    });
+    // Fetch from Airtable (Police Violence Data)
+    const airtableURL = "https://api.airtable.com/v0/appCgfEfLOlcf3RbH/Police%20Violence%20Data";
+    const token = "patEEWO4nELIhjRsJ.e44b3ecaea0ae8e9fbbfb5b151db087cc5834b489001dd97a4a190a6e39c98a6";
 
-    const heatPoints = [
-      [38.6270, -90.1994, 0.8],
-      [34.0522, -118.2437, 0.6],
-      [40.7128, -74.0060, 0.7],
-      [41.8781, -87.6298, 0.5],
-      [29.7604, -95.3698, 0.3]
-    ];
+    const heatPoints = [];
 
-    L.heatLayer(heatPoints, {
-      radius: 35,
-      blur: 10,
-      minOpacity: 0.4,
-      maxZoom: 15
-    }).addTo(map);
+    try {
+      const response = await fetch(airtableURL, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      data.records.forEach(record => {
+        const fields = record.fields;
+        const lat = fields.latitude;
+        const lon = fields.longitude;
+
+        if (lat && lon) {
+          heatPoints.push([lat, lon, 0.5]); // Adjust weight if needed
+        }
+      });
+
+      L.heatLayer(heatPoints, {
+        radius: 35,
+        blur: 10,
+        minOpacity: 0.4,
+        maxZoom: 15
+      }).addTo(map);
+
+    } catch (err) {
+      console.error("Failed to load Airtable data:", err);
+    }
   }
 
-  // Try to get user's location
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
