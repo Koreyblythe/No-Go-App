@@ -3,13 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const introPage = document.getElementById('intro-page');
   const mainApp = document.getElementById('main-app');
 
-  // Handle opt-out or text value
+  let userLocation = null;
+
   function getValue(name) {
     const skip = document.querySelector(`input[name="${name}-skip"]`).checked;
     return skip ? 'N/A' : document.querySelector(`input[name="${name}"]`).value || 'N/A';
   }
 
-  // Show main app
   function showMainApp() {
     introPage.style.display = 'none';
     mainApp.style.display = 'block';
@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initMap(identity);
   }
 
-  // Save identity
   if (identityForm) {
     identityForm.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -41,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Sidebar toggle
   const sidebarToggle = document.getElementById('sidebar-toggle');
   if (sidebarToggle) {
     sidebarToggle.addEventListener('click', () => {
@@ -49,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Reset user identity
   const resetBtn = document.getElementById('reset-btn');
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
@@ -58,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Report form
   const reportForm = document.getElementById('user-report-form');
   const submitStatus = document.getElementById('submit-status');
 
@@ -73,22 +69,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
       submitStatus.textContent = "Report submitted. Thank you.";
       reportForm.reset();
-
-      // Future: Airtable API POST will go here
     });
   }
 
-  // Map + heat layer
   function initMap(identity) {
     const map = L.map('map', {
       maxBounds: [
-        [49.5, -125],  // top-left corner of U.S.
-        [24.5, -66.5]  // bottom-right corner
+        [49.5, -125],
+        [24.5, -66.5]
       ],
       maxBoundsViscosity: 1.0
-    }).setView([39.5, -98.35], 5); // center on U.S.
+    });
+
+    const defaultCenter = [39.5, -98.35];
+    const defaultZoom = 5;
+
+    map.setView(userLocation || defaultCenter, userLocation ? 10 : defaultZoom);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    if (userLocation) {
+      L.marker(userLocation).addTo(map).bindPopup("You are here").openPopup();
+    }
 
     const reports = [
       {
@@ -133,7 +135,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }).addTo(map);
   }
 
-  if (localStorage.getItem('identity')) {
-    showMainApp();
+  // Try to get user's location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        userLocation = [position.coords.latitude, position.coords.longitude];
+        if (localStorage.getItem('identity')) {
+          showMainApp();
+        }
+      },
+      (error) => {
+        console.warn("Geolocation denied or failed:", error.message);
+        if (localStorage.getItem('identity')) {
+          showMainApp();
+        }
+      }
+    );
+  } else {
+    console.warn("Geolocation not supported");
+    if (localStorage.getItem('identity')) {
+      showMainApp();
+    }
   }
 });
