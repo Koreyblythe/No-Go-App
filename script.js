@@ -124,8 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     records.forEach((record) => {
       const fields = record.fields;
-      const lat = fields.latitude;
-      const lon = fields.longitude;
+      const lat = fields.Latitude;
+      const lon = fields.Longitude;
 
       if (lat && lon) {
         heatPoints.push([lat, lon, 0.5]);
