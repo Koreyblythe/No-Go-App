@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mainApp = document.getElementById("main-app");
 
   let userLocation = null;
+  let userIdentity = {};
 
   function getValue(name) {
     const skip = document.querySelector(`input[name="${name}-skip"]`).checked;
@@ -14,11 +15,11 @@ document.addEventListener("DOMContentLoaded", () => {
     introPage.style.display = "none";
     mainApp.style.display = "block";
 
-    const identity = JSON.parse(localStorage.getItem("identity"));
-    document.getElementById("user-race").textContent = identity.race;
-    document.getElementById("user-gender").textContent = identity.gender;
-    document.getElementById("user-orientation").textContent = identity.orientation;
-    document.getElementById("user-politics").textContent = identity.politics;
+    userIdentity = JSON.parse(localStorage.getItem("identity"));
+    document.getElementById("user-race").textContent = userIdentity.race;
+    document.getElementById("user-gender").textContent = userIdentity.gender;
+    document.getElementById("user-orientation").textContent = userIdentity.orientation;
+    document.getElementById("user-politics").textContent = userIdentity.politics;
 
     initMap();
   }
@@ -28,10 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
 
       const identity = {
-        race: getValue("race"),
-        gender: getValue("gender"),
-        orientation: getValue("orientation"),
-        politics: getValue("politics"),
+        race: getValue("race").toLowerCase(),
+        gender: getValue("gender").toLowerCase(),
+        orientation: getValue("orientation").toLowerCase(),
+        politics: getValue("politics").toLowerCase()
       };
 
       localStorage.setItem("identity", JSON.stringify(identity));
@@ -74,9 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const map = L.map("map", {
       maxBounds: [
         [49.5, -125],
-        [24.5, -66.5],
+        [24.5, -66.5]
       ],
-      maxBoundsViscosity: 1.0,
+      maxBoundsViscosity: 1.0
     });
 
     const defaultCenter = [39.5, -98.35];
@@ -84,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     map.setView(userLocation || defaultCenter, userLocation ? 7 : defaultZoom);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; OpenStreetMap contributors',
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     if (userLocation) {
@@ -100,30 +101,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
       rows.forEach((row) => {
         const cells = row.split(",");
+        const name = cells[0];
+        const race = cells[2].toLowerCase();
+        const gender = cells[3].toLowerCase();
+        const cause = cells[12];
+        const date = cells[5];
+        const city = cells[6];
+        const state = cells[7];
         const lat = parseFloat(cells[37]);
         const lon = parseFloat(cells[38]);
 
         if (!isNaN(lat) && !isNaN(lon)) {
-          heatPoints.push([lat, lon, 0.25]); // lighter intensity
+          heatPoints.push([lat, lon, 0.25]);
+
+          const matchesUser = (
+            race === userIdentity.race ||
+            gender === userIdentity.gender ||
+            userIdentity.orientation === "any"
+          );
+
+          if (matchesUser) {
+            const popupText = `
+              <strong>${name || "Unnamed Victim"}</strong><br>
+              Race: ${race}<br>
+              Gender: ${gender}<br>
+              Cause: ${cause}<br>
+              Date: ${date}<br>
+              Location: ${city}, ${state}
+            `;
+
+            L.marker([lat, lon]).addTo(map).bindPopup(popupText);
+          }
         }
       });
 
-      if (heatPoints.length > 0) {
-        L.heatLayer(heatPoints, {
-          radius: 25,
-          blur: 20,
-          gradient: {
-            0.2: "#00ffff",
-            0.4: "#03dac5",
-            0.6: "#ff8c00",
-            1.0: "#ff0000"
-          },
-          minOpacity: 0.3,
-          maxZoom: 15
-        }).addTo(map);
-      } else {
-        console.warn("No valid coordinates found in CSV.");
-      }
+      const heat = L.heatLayer(heatPoints, {
+        radius: 25,
+        blur: 20,
+        minOpacity: 0.2,
+        gradient: {
+          0.2: "#00ffff",
+          0.4: "#03dac5",
+          0.6: "#ff8c00",
+          1.0: "#ff0000"
+        }
+      }).addTo(map);
+
+      map.on("zoomend", () => {
+        const zoom = map.getZoom();
+        const opacity = zoom >= 8 ? 0.6 : 0.3;
+        heat.setOptions({ minOpacity: opacity });
+      });
+
     } catch (err) {
       console.error("Failed to load CSV:", err);
     }
